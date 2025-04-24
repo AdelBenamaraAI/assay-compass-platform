@@ -9,7 +9,7 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts';
 
 interface CellAnalysisWidgetProps {
   percentage: number;
@@ -73,12 +73,19 @@ const CellAnalysisWidget: React.FC<CellAnalysisWidgetProps> = ({ percentage, ima
               <BarChart data={chartData}>
                 <XAxis dataKey="name" />
                 <YAxis domain={[0, 100]} />
-                <Tooltip content={(props) => (
-                  <ChartTooltipContent
-                    {...props}
-                    className="bg-background/80 backdrop-blur-sm"
-                  />
-                )} />
+                <Tooltip 
+                  content={(props) => {
+                    if (!props.active || !props.payload?.length) {
+                      return null;
+                    }
+                    return (
+                      <ChartTooltipContent
+                        {...props}
+                        className="bg-background/80 backdrop-blur-sm"
+                      />
+                    );
+                  }}
+                />
                 <Bar dataKey="value" name="Pluripotency %" fill="currentColor" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
