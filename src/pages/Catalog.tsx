@@ -15,7 +15,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Regenerative Medicine',
     cellType: 'Stem Cells',
     imagingType: 'Fluorescence',
-    thumbnail: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://www.clinisciences.com/en/upload/thumbs/311012_125025_PEEL_7THAMr-e3dba5.jpg',
   },
   {
     id: 'carcounting',
@@ -24,7 +24,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Immuno-Oncology',
     cellType: 'T Cells',
     imagingType: 'Brightfield',
-    thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://www.stemcell.com/media/images/pages/20th-anniversary/immunology-features/CAR-T-Cell.jpg',
   },
   {
     id: 'organoid',

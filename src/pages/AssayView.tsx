@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const assayData: Record<string, any> = {
   'pluripotency': {
     id: 'pluripotency',
-    title: 'Pluripotency Quantification 2',
+    title: 'Pluripotency Quantification',
     description: 'Automatically detects and segments individual cells in fluorescence images, then calculates the percentage of nuclei positive for key pluripotency markers such as Oct4 and Nanog. Ideal for stem cell quality control and differentiation experiments.',
     category: 'Regenerative Medicine',
     cellType: 'Stem Cells',
