@@ -9,13 +9,19 @@ interface GaugeProps {
 }
 
 const Gauge: React.FC<GaugeProps> = ({ value, size = 'md' }) => {
-  const circumference = 2 * Math.PI * 40; // r = 40
+  const circumference = 2 * Math.PI * 40;
   const offset = circumference - (value / 100) * circumference;
   
   const sizeClasses = {
     sm: 'w-24 h-24',
     md: 'w-32 h-32',
     lg: 'w-40 h-40'
+  };
+
+  const getColorClass = (value: number) => {
+    if (value >= 90) return 'text-green-500';
+    if (value >= 70) return 'text-orange-500';
+    return 'text-red-500';
   };
 
   return (
@@ -30,7 +36,7 @@ const Gauge: React.FC<GaugeProps> = ({ value, size = 'md' }) => {
           cy="50%"
         />
         <circle
-          className="text-orange-500 stroke-current transition-all duration-500 ease-in-out"
+          className={cn("transition-all duration-500 ease-in-out stroke-current", getColorClass(value))}
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -42,8 +48,8 @@ const Gauge: React.FC<GaugeProps> = ({ value, size = 'md' }) => {
         />
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
-        <CircleGauge className="w-6 h-6 text-orange-500 mb-1" />
-        <span className="text-2xl font-bold text-orange-500">{value}%</span>
+        <CircleGauge className={cn("w-6 h-6 mb-1", getColorClass(value))} />
+        <span className={cn("text-2xl font-bold", getColorClass(value))}>{value}%</span>
         <span className="text-xs text-muted-foreground">Pluripotency</span>
       </div>
     </div>

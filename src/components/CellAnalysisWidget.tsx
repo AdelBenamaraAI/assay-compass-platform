@@ -10,6 +10,7 @@ import {
   ChartTooltipContent
 } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts';
+import { Separator } from '@/components/ui/separator';
 
 interface CellAnalysisWidgetProps {
   percentage: number;
@@ -44,51 +45,70 @@ const CellAnalysisWidget: React.FC<CellAnalysisWidgetProps> = ({ percentage, ima
             <ChartBar className="h-5 w-5 text-orange-500" />
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="aspect-video relative rounded-lg overflow-hidden border border-border">
-              <img 
-                src={imageUrl} 
-                alt="Analyzed cell image" 
-                className="w-full h-full object-cover"
-              />
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Image Section */}
+            <div className="lg:col-span-2">
+              <div className="aspect-video relative rounded-lg overflow-hidden border border-border bg-black/5">
+                <img 
+                  src={imageUrl} 
+                  alt="Analyzed cell image" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
+                  <p className="text-sm text-white font-medium">Cell Sample Analysis</p>
+                </div>
+              </div>
             </div>
             
-            <div className="flex items-center justify-center">
-              <Gauge value={percentage} />
+            {/* Gauge Section */}
+            <div className="flex flex-col justify-center items-center bg-muted/30 rounded-lg p-4">
+              <h4 className="text-sm font-medium mb-4">Pluripotency Score</h4>
+              <Gauge value={percentage} size="lg" />
             </div>
           </div>
+
+          <Separator className="my-6" />
           
-          <div className="h-[200px] mt-6">
-            <ChartContainer
-              className="h-full"
-              config={{
-                bar: {
-                  theme: {
-                    light: "#f97316",
-                    dark: "#f97316"
-                  }
-                }
-              }}
-            >
-              <BarChart data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis domain={[0, 100]} />
-                <Tooltip 
-                  content={(props) => {
-                    if (!props.active || !props.payload?.length) {
-                      return null;
+          {/* Historical Data Chart */}
+          <div>
+            <h4 className="text-sm font-medium mb-4">Historical Analysis Trend</h4>
+            <div className="h-[200px]">
+              <ChartContainer
+                className="h-full"
+                config={{
+                  bar: {
+                    theme: {
+                      light: "#f97316",
+                      dark: "#f97316"
                     }
-                    return (
-                      <ChartTooltipContent
-                        {...props}
-                        className="bg-background/80 backdrop-blur-sm"
-                      />
-                    );
-                  }}
-                />
-                <Bar dataKey="value" name="Pluripotency %" fill="currentColor" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
+                  }
+                }}
+              >
+                <BarChart data={chartData}>
+                  <XAxis dataKey="name" />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip 
+                    content={(props) => {
+                      if (!props.active || !props.payload?.length) {
+                        return null;
+                      }
+                      return (
+                        <ChartTooltipContent
+                          {...props}
+                          className="bg-background/80 backdrop-blur-sm"
+                        />
+                      );
+                    }}
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    name="Pluripotency %" 
+                    fill="currentColor" 
+                    radius={[4, 4, 0, 0]} 
+                  />
+                </BarChart>
+              </ChartContainer>
+            </div>
           </div>
         </div>
       </Card>
