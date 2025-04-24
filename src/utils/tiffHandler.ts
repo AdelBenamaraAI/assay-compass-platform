@@ -4,13 +4,20 @@ import * as TIFF from 'tiff';
 export const convertTiffToImageData = async (file: File): Promise<string> => {
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const tiff = new TIFF.TiffDecoder(new Uint8Array(arrayBuffer));
-    const image = tiff.decode();
+    
+    // Use the correct TIFF API - decode() is a function on the module itself
+    const tiffData = TIFF.decode(new Uint8Array(arrayBuffer));
+    
+    // Get the first image from the TIFF (TIFFs can contain multiple images)
+    const firstImage = Array.isArray(tiffData) ? tiffData[0] : tiffData;
+    
+    // Get image dimensions and data
+    const { width, height, data } = firstImage;
     
     // Create a canvas to draw the TIFF data
     const canvas = document.createElement('canvas');
-    canvas.width = image.width;
-    canvas.height = image.height;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
     
     if (!ctx) {
@@ -19,9 +26,9 @@ export const convertTiffToImageData = async (file: File): Promise<string> => {
 
     // Create ImageData from the TIFF data
     const imageData = new ImageData(
-      new Uint8ClampedArray(image.data),
-      image.width,
-      image.height
+      new Uint8ClampedArray(data),
+      width,
+      height
     );
     
     ctx.putImageData(imageData, 0, 0);
@@ -33,4 +40,3 @@ export const convertTiffToImageData = async (file: File): Promise<string> => {
     throw error;
   }
 };
-
