@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
+import CellAnalysisWidget from './CellAnalysisWidget';
 
 interface UploadAreaProps {
   onUpload?: (files: File[]) => void;
@@ -19,6 +19,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [analyzedImages, setAnalyzedImages] = useState<Array<{url: string, percentage: number}>>([]);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -45,10 +46,8 @@ const UploadArea: React.FC<UploadAreaProps> = ({
     const newFiles: File[] = [];
     const errors: string[] = [];
     
-    // Convert FileList to array
     const fileArray = Array.from(fileList);
     
-    // Check file count
     if (fileArray.length > maxFiles) {
       toast({
         title: "Too many files",
@@ -58,9 +57,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       return;
     }
     
-    // Validate each file
     fileArray.forEach(file => {
-      // Check file type
       const fileType = file.name.split('.').pop()?.toLowerCase();
       const acceptedTypes = accept.split(',').map(type => type.replace('.', '').toLowerCase());
       const isValidType = acceptedTypes.some(type => fileType === type);
@@ -70,7 +67,6 @@ const UploadArea: React.FC<UploadAreaProps> = ({
         return;
       }
       
-      // Check file size
       if (file.size > maxSize) {
         errors.push(`${file.name}: Exceeds maximum size of ${Math.round(maxSize / (1024 * 1024))}MB`);
         return;
@@ -79,7 +75,6 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       newFiles.push(file);
     });
     
-    // Show errors if any
     if (errors.length > 0) {
       toast({
         title: "Upload issues",
@@ -88,12 +83,17 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       });
     }
     
-    // Set valid files
     if (newFiles.length > 0) {
       const updatedFiles = [...files, ...newFiles];
       setFiles(updatedFiles);
       
-      // Notify parent component
+      const newAnalyzedImages = newFiles.map(file => ({
+        url: URL.createObjectURL(file),
+        percentage: Math.floor(Math.random() * (95 - 75 + 1) + 75)
+      }));
+      
+      setAnalyzedImages(prev => [...prev, ...newAnalyzedImages]);
+      
       if (onUpload) {
         onUpload(updatedFiles);
       }
@@ -107,7 +107,9 @@ const UploadArea: React.FC<UploadAreaProps> = ({
 
   const removeFile = (index: number) => {
     const updatedFiles = files.filter((_, i) => i !== index);
+    const updatedAnalyzedImages = analyzedImages.filter((_, i) => i !== index);
     setFiles(updatedFiles);
+    setAnalyzedImages(updatedAnalyzedImages);
     if (onUpload) {
       onUpload(updatedFiles);
     }
@@ -115,6 +117,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
 
   const clearFiles = () => {
     setFiles([]);
+    setAnalyzedImages([]);
     if (onUpload) {
       onUpload([]);
     }
@@ -124,7 +127,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
     <div className="w-full space-y-4">
       <Card 
         className={`border-2 border-dashed rounded-lg p-8 text-center ${
-          isDragging ? "border-primary bg-primary/5" : "border-science-gray"
+          isDragging ? "border-primary bg-primary/5" : "border-border"
         } transition-colors duration-200`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -163,50 +166,47 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       </Card>
 
       {files.length > 0 && (
-        <div className="border rounded-lg divide-y">
-          <div className="p-3 bg-muted/50 flex justify-between items-center">
-            <h3 className="font-medium text-sm">
-              {files.length} file{files.length !== 1 ? 's' : ''} selected
-            </h3>
-            <Button variant="ghost" size="sm" onClick={clearFiles} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-              Clear All
-            </Button>
-          </div>
-          <div className="max-h-60 overflow-y-auto">
-            {files.map((file, index) => (
-              <div key={`${file.name}-${index}`} className="flex items-center justify-between p-3 hover:bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+        <div className="space-y-6">
+          <div className="border rounded-lg divide-y">
+            <div className="p-3 bg-muted/50 flex justify-between items-center">
+              <h3 className="font-medium text-sm">
+                {files.length} file{files.length !== 1 ? 's' : ''} selected
+              </h3>
+              <Button variant="ghost" size="sm" onClick={clearFiles} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                Clear All
+              </Button>
+            </div>
+            <div className="grid gap-6 p-6">
+              {analyzedImages.map((image, index) => (
+                <div key={`${files[index].name}-${index}`} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm">
+                        <p className="font-medium truncate max-w-[200px]">{files[index].name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(files[index].size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => removeFile(index)}
+                      className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </Button>
                   </div>
-                  <div className="text-sm">
-                    <p className="font-medium truncate max-w-[200px]">{file.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
+                  <CellAnalysisWidget 
+                    imageUrl={image.url} 
+                    percentage={image.percentage}
+                  />
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => removeFile(index)}
-                  className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-500"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </Button>
-              </div>
-            ))}
-          </div>
-          <div className="p-3 flex justify-end">
-            <Button className="scientific-button-primary">
-              Start Analysis
-            </Button>
+              ))}
+            </div>
           </div>
         </div>
       )}
