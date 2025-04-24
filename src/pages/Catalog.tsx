@@ -42,7 +42,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Cell Manufacturing',
     cellType: 'Fibroblasts',
     imagingType: 'Fluorescence',
-    thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://blog.crownbio.com/hubfs/high-content-screening.png',
   },
   {
     id: 'spheroid',
@@ -51,7 +51,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Drug Discovery',
     cellType: 'Spheroids',
     imagingType: 'Phase Contrast',
-    thumbnail: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://d2jx2rerrg6sh3.cloudfront.net/image-handler/picture/2020/4/art-2-2.jpg',
   },
   {
     id: 'nkcell',
@@ -60,7 +60,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Immuno-Oncology',
     cellType: 'NK Cells',
     imagingType: 'Fluorescence',
-    thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://www.researchgate.net/profile/Hongkai-Zhang-5/publication/283078668/figure/fig3/AS:931578955976705@1599117139112/Scanning-electron-microscopy-analysis-of-NK-cells-interacting-with-a-target-cell-A-A.jpg',
   },
 ];
 
