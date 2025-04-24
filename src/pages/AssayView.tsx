@@ -16,7 +16,7 @@ const assayData: Record<string, any> = {
     category: 'Regenerative Medicine',
     cellType: 'Stem Cells',
     imagingType: 'Fluorescence',
-    image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&h=600',
+    image: 'https://www.clinisciences.com/en/upload/thumbs/311012_125025_PEEL_7THAMr-e3dba5.jpg',
     features: [
       'Automated nuclei segmentation based on DAPI or Hoechst staining',
       'Multi-channel marker quantification for Oct4, Nanog, Sox2, and other markers',
