@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import CellAnalysisWidget from './CellAnalysisWidget';
+import { convertTiffToImageData } from '@/utils/tiffHandler';
 
 interface UploadAreaProps {
   onUpload?: (files: File[]) => void;
@@ -14,7 +15,7 @@ interface UploadAreaProps {
 const UploadArea: React.FC<UploadAreaProps> = ({
   onUpload,
   accept = '.tif,.tiff,.png,.jpg,.jpeg',
-  maxSize = 50 * 1024 * 1024, // 50MB
+  maxSize = 50 * 1024 * 1024,
   maxFiles = 10
 }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -42,7 +43,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
     }
   };
 
-  const processFiles = (fileList: FileList) => {
+  const processFiles = async (fileList: FileList) => {
     const newFiles: File[] = [];
     const errors: string[] = [];
     
@@ -57,23 +58,23 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       return;
     }
     
-    fileArray.forEach(file => {
+    for (const file of fileArray) {
       const fileType = file.name.split('.').pop()?.toLowerCase();
       const acceptedTypes = accept.split(',').map(type => type.replace('.', '').toLowerCase());
       const isValidType = acceptedTypes.some(type => fileType === type);
       
       if (!isValidType) {
         errors.push(`${file.name}: Invalid file type`);
-        return;
+        continue;
       }
       
       if (file.size > maxSize) {
         errors.push(`${file.name}: Exceeds maximum size of ${Math.round(maxSize / (1024 * 1024))}MB`);
-        return;
+        continue;
       }
       
       newFiles.push(file);
-    });
+    }
     
     if (errors.length > 0) {
       toast({
@@ -87,12 +88,37 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       const updatedFiles = [...files, ...newFiles];
       setFiles(updatedFiles);
       
-      const newAnalyzedImages = newFiles.map(file => ({
-        url: URL.createObjectURL(file),
-        percentage: Math.floor(Math.random() * (95 - 75 + 1) + 75)
-      }));
+      const newAnalyzedImages = await Promise.all(
+        newFiles.map(async (file) => {
+          let url;
+          if (file.name.toLowerCase().endsWith('.tif') || file.name.toLowerCase().endsWith('.tiff')) {
+            try {
+              url = await convertTiffToImageData(file);
+            } catch (error) {
+              console.error('Error converting TIFF:', error);
+              toast({
+                title: "TIFF conversion error",
+                description: `Failed to convert ${file.name}`,
+                variant: "destructive"
+              });
+              return null;
+            }
+          } else {
+            url = URL.createObjectURL(file);
+          }
+          
+          return {
+            url,
+            percentage: Math.floor(Math.random() * (95 - 75 + 1) + 75)
+          };
+        })
+      );
       
-      setAnalyzedImages(prev => [...prev, ...newAnalyzedImages]);
+      const validAnalyzedImages = newAnalyzedImages.filter(
+        (image): image is { url: string; percentage: number } => image !== null
+      );
+      
+      setAnalyzedImages(prev => [...prev, ...validAnalyzedImages]);
       
       if (onUpload) {
         onUpload(updatedFiles);
@@ -100,7 +126,7 @@ const UploadArea: React.FC<UploadAreaProps> = ({
       
       toast({
         title: "Files added",
-        description: `${newFiles.length} file(s) ready for analysis`
+        description: `${validAnalyzedImages.length} file(s) ready for analysis`
       });
     }
   };
