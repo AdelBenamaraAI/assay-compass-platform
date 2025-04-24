@@ -40,7 +40,9 @@ function extractRGBA(ifd: UTIF.IFD, buffer: ArrayBuffer, pixelCount: number): Ui
 
   if (raw?.byteLength === expectedBytes) {
     try {
-      return normalize16BitGrayscale(new Uint16Array(raw.buffer, raw.byteOffset, pixelCount));
+      // Fix: Cast raw as ArrayBufferLike to handle it correctly
+      // Create Uint16Array directly from raw, since it's already an ArrayBufferLike
+      return normalize16BitGrayscale(new Uint16Array(raw as ArrayBufferLike));
     } catch {
       console.warn("16-bit normalization failed; falling back to RGBA8");
     }
@@ -88,4 +90,3 @@ function createImageFromRGBA(rgba: Uint8ClampedArray, width: number, height: num
     img.onerror = () => reject(new Error("Error loading TIFF image"));
   });
 }
-
