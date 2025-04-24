@@ -33,7 +33,7 @@ const sampleAssays: AssayCardProps[] = [
     category: 'Drug Discovery',
     cellType: 'Organoids',
     imagingType: 'Confocal',
-    thumbnail: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=500&h=300',
+    thumbnail: 'https://www.zeiss.com/content/dam/rms/reference-master/applications/life-sciences/image-analysis-examples-for-organoid-growth-analysis/63935be603a95239f3c35f40_organoid_3_3d_image_landscape-web.jpg/_jcr_content/renditions/original.image_file.1440.810.90,0,1690,900.file/63935be603a95239f3c35f40_organoid_3_3d_image_landscape-web.jpg',
   },
   {
     id: 'viability',
