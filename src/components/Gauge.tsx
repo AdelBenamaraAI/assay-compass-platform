@@ -48,9 +48,7 @@ const Gauge: React.FC<GaugeProps> = ({ value, size = 'md' }) => {
         />
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
-        <CircleGauge className={cn("w-6 h-6 mb-1", getColorClass(value))} />
         <span className={cn("text-2xl font-bold", getColorClass(value))}>{value}%</span>
-        <span className="text-xs text-muted-foreground">Pluripotency</span>
       </div>
     </div>
   );
