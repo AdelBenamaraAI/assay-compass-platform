@@ -106,7 +106,7 @@ const AssayView: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Link to="/catalog" className="text-science-teal hover:text-science-blue">
-            Assay Catalog
+            Assay Marketplace
           </Link>
           <span className="text-gray-400">/</span>
           <span className="text-gray-700">{assay.title}</span>
