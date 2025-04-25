@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 36 100% 97%; /* soft orange-tinted background */
+    --background: 210 40% 98%; /* soft orange-tinted background */
     --foreground: 240 10% 10%; /* dark neutral for strong contrast */
     
     --card: 0 0% 100%;
