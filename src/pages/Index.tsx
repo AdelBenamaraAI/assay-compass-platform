@@ -30,7 +30,7 @@ const Index: React.FC = () => {
                     <line x1="9" y1="3" x2="9" y2="21"></line>
                   </svg>
                 </div>
-                <h3 className="text-xl font-medium mb-2">Assay Catalog</h3>
+                <h3 className="text-xl font-medium mb-2">Assay Marketplace</h3>
                 <p className="text-gray-600">
                   Explore a comprehensive library of validated image-analysis pipelines with detailed documentation.
                 </p>
