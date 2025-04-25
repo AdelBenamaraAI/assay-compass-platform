@@ -9,16 +9,16 @@
     --foreground: 222.2 84% 4.9%; /* dark neutral for strong contrast */
     
     --card: 0 0% 100%;
-    --card-foreground: 28 75% 25%; /* rich dark orange */
+    --card-foreground: 222.2 84% 4.9%; /* rich dark orange */
     
     --popover: 0 0% 100%;
-    --popover-foreground: 28 75% 25%;
+    --popover-foreground: 222.2 84% 4.9%;
     
     --primary: 28 75% 60%; /* vibrant orange */
     --primary-foreground: 240 10% 10%; /* dark gray text on orange */
     
     --secondary: 30 60% 85%; /* light orange-beige */
-    --secondary-foreground: 28 75% 25%; /* darker orange for text */
+    --secondary-foreground: 222.2 84% 4.9%; /* darker orange for text */
     
     --muted: 28 60% 92%; /* light orange-muted bg */
     --muted-foreground: 28 25% 45%; /* muted orange text */
