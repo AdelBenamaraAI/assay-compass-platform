@@ -1,4 +1,3 @@
-
 import UTIF from "utif";
 
 interface IFD {
@@ -102,3 +101,26 @@ function renderToImage(rgba: Uint8ClampedArray, width: number, height: number): 
   });
 }
 
+/**
+ * Convert a TIFF file to a data URL for rendering
+ * @param file The TIFF file to convert
+ * @returns Promise resolving to a data URL of the image
+ */
+export async function convertTiffToImageData(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const buffer = e.target?.result as ArrayBuffer;
+        const ifd = getFirstPageIFD(buffer);
+        const rgba = extractRGBA(ifd);
+        const imageElement = await renderToImage(rgba, ifd.width, ifd.height);
+        resolve(imageElement.src);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
