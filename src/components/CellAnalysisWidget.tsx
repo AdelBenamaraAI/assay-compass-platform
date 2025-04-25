@@ -88,7 +88,7 @@ const CellAnalysisWidget: React.FC<CellAnalysisWidgetProps> = ({ percentage, ima
             
             {/* Gauge Section */}
             <div className="flex flex-col justify-center items-center bg-muted/30 rounded-lg p-4">
-              <h4 className="text-sm font-medium mb-4">Current Pluripotency Score</h4>
+              <h4 className="text-sm font-medium mb-4">Current Oct4 Score</h4>
               <Gauge value={percentage} size="lg" />
             </div>
           </div>
