@@ -1,92 +1,104 @@
 
 import UTIF from "utif";
 
-/** Converts a File object containing TIFF data to a data URL */
-export const convertTiffToImageData = async (file: File): Promise<string> => {
-  const buffer = await readFileAsArrayBuffer(file);
-  const ifd = getFirstIFD(buffer);
-  const { width, height } = ifd;
-  const rgba = extractRGBA(ifd, buffer, width * height);
-  const image = await createImageFromRGBA(rgba, width, height);
-  return image.src;
-};
-
-/** Reads a File as ArrayBuffer */
-function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsArrayBuffer(file);
-  });
+interface IFD {
+  width: number;
+  height: number;
+  data?: ArrayBufferLike;
 }
 
-/** Decodes the first IFD in the TIFF buffer or throws if none found */
-function getFirstIFD(buffer: ArrayBuffer): UTIF.IFD {
-  const ifds = UTIF.decode(buffer);
-  if (ifds.length === 0) throw new Error("No image data in TIFF.");
-  const ifd = ifds[0];
+/**
+ * Loads a TIFF image by fetching, decoding, and drawing it to a canvas.
+ * Automatically handles 16-bit grayscale TIFFs even if metadata is missing.
+ */
+export async function loadTiffImage(src: string): Promise<HTMLImageElement> {
+  const buffer = await fetchArrayBuffer(src);
+  const ifd = getFirstPageIFD(buffer);
+  const rgba = extractRGBA(ifd);
+  return renderToImage(rgba, ifd.width, ifd.height);
+}
+
+/** Fetch the TIFF as an ArrayBuffer, or throw on HTTP error */
+async function fetchArrayBuffer(src: string): Promise<ArrayBuffer> {
+  const res = await fetch(src);
+  if (!res.ok) throw new Error(`Failed to fetch TIFF (${res.status})`);
+  return res.arrayBuffer();
+}
+
+/** Decode the first IFD/page in the TIFF, or throw if empty */
+function getFirstPageIFD(buffer: ArrayBuffer): IFD {
+  const pages = UTIF.decode(buffer);
+  if (pages.length === 0) throw new Error("No images found in TIFF");
+  const ifd = pages[0];
   UTIF.decodeImage(buffer, ifd);
   return ifd;
 }
 
 /**
- * Returns an RGBA Uint8ClampedArray for this IFD.
- * Tries 16-bit grayscale normalization first, then falls back to UTIF.toRGBA8.
+ * Turn the raw IFD data into an RGBA clamped array.
+ *    - Try 16-bit → 8-bit grayscale normalization first
+ *    - Otherwise fall back to UTIF.toRGBA8
  */
-function extractRGBA(ifd: UTIF.IFD, buffer: ArrayBuffer, pixelCount: number): Uint8ClampedArray {
-  const expectedBytes = pixelCount * 2;
-  const raw = ifd.data;
+function extractRGBA(ifd: IFD): Uint8ClampedArray {
+  const { data, width, height } = ifd;
+  const pixels = width * height;
 
-  if (raw?.byteLength === expectedBytes) {
+  if (data?.byteLength === pixels * 2) {
     try {
-      // Fix: Cast raw as ArrayBufferLike to handle it correctly
-      // Create Uint16Array directly from raw, since it's already an ArrayBufferLike
-      return normalize16BitGrayscale(new Uint16Array(raw as ArrayBufferLike));
+      // Using ArrayBufferLike which is compatible with both ArrayBuffer and SharedArrayBuffer
+      const raw16 = new Uint16Array(data);
+      return normalize16to8(raw16);
     } catch {
-      console.warn("16-bit normalization failed; falling back to RGBA8");
+      console.warn("Grayscale normalization failed; using RGBA8 fallback");
     }
   }
 
-  return UTIF.toRGBA8(ifd);
+  // UTIF.toRGBA8 returns Uint8Array → coerce to Uint8ClampedArray
+  const fallback = UTIF.toRGBA8(ifd);
+  return new Uint8ClampedArray(fallback);
 }
 
-/** Maps 16-bit grayscale → 8-bit RGBA (min→0, max→255) */
-function normalize16BitGrayscale(pixels16: Uint16Array): Uint8ClampedArray {
-  let min = Infinity, max = -Infinity;
-  for (const v of pixels16) {
+/** Normalize a 16-bit grayscale buffer into 8-bit RGBA (min→0, max→255) */
+function normalize16to8(raw: Uint16Array): Uint8ClampedArray {
+  let min = Infinity,
+    max = -Infinity;
+  for (const v of raw) {
     if (v < min) min = v;
     if (v > max) max = v;
   }
   const range = max - min || 1;
-  const rgba = new Uint8ClampedArray(pixels16.length * 4);
+  const out = new Uint8ClampedArray(raw.length * 4);
 
-  for (let i = 0; i < pixels16.length; i++) {
-    const gray8 = Math.round(((pixels16[i] - min) * 255) / range);
+  for (let i = 0; i < raw.length; i++) {
+    const gray = Math.round(((raw[i] - min) * 255) / range);
     const o = i * 4;
-    rgba[o] = rgba[o+1] = rgba[o+2] = gray8;
-    rgba[o+3] = 255;
+    out[o] = gray;
+    out[o + 1] = gray;
+    out[o + 2] = gray;
+    out[o + 3] = 255;
   }
 
-  return rgba;
+  return out;
 }
 
-/** Renders RGBA data into a Canvas, then returns it as an HTMLImageElement */
-function createImageFromRGBA(rgba: Uint8ClampedArray, width: number, height: number): Promise<HTMLImageElement> {
+/** Paint RGBA into a canvas and return as an HTMLImageElement */
+function renderToImage(rgba: Uint8ClampedArray, width: number, height: number): Promise<HTMLImageElement> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
 
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Failed to get 2D canvas context.");
+  if (!ctx) throw new Error("Cannot acquire 2D context");
 
-  const imgData = new ImageData(rgba, width, height);
-  ctx.putImageData(imgData, 0, 0);
+  const imageData = ctx.createImageData(width, height);
+  imageData.data.set(rgba);
+  ctx.putImageData(imageData, 0, 0);
 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = canvas.toDataURL();
-    img.onload = () => (img.width && img.height) ? resolve(img) : reject(new Error("Invalid image dimensions"));
-    img.onerror = () => reject(new Error("Error loading TIFF image"));
+    img.onload = () => (img.width && img.height ? resolve(img) : reject(new Error("Zero-dimension image")));
+    img.onerror = () => reject(new Error("Failed to load TIFF as image"));
   });
 }
+
