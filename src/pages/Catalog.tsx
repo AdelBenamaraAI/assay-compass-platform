@@ -120,7 +120,7 @@ const Catalog: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
