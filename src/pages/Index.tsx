@@ -8,35 +8,7 @@ import Navigation from '@/components/Navigation';
 const Index: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
-      <section className="bg-gradient-to-b from-science-blue to-science-purple py-20 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Advanced Image Analysis for <span className="text-science-bright">Cell Therapy</span>
-            </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              A centralized marketplace for biologists to discover, run, and apply cutting-edge image analysis pipelines
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Button asChild size="lg" className="bg-white text-science-blue hover:bg-white/90">
-                <Link to="/catalog">Browse Assays</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                <Link to="#">Learn More</Link>
-              </Button>
-            </div>
-            <div className="pt-8">
-              <img 
-                src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&w=1200&h=400&fit=crop" 
-                alt="Cell therapy visualization" 
-                className="rounded-lg shadow-xl w-full object-cover h-64 md:h-80"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+
       
       {/* Features Section */}
       <section className="py-20">
