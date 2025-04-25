@@ -159,11 +159,6 @@ const Catalog: React.FC = () => {
         </div>
         
         <div className="flex flex-col md:flex-row gap-8">
-          <div className={`${isMobileFilterVisible ? 'block' : 'hidden'} md:block md:w-72 flex-shrink-0`}>
-            <div className="bg-white border border-science-gray rounded-lg sticky top-24">
-              <FilterSidebar onFilter={handleFilter} />
-            </div>
-          </div>
           
           <div className="flex-grow">
             {filteredAssays.length > 0 ? (
