@@ -87,7 +87,6 @@ const AssayView: React.FC = () => {
   if (!assay) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navigation />
         <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center flex-grow">
           <h1 className="text-2xl font-bold mb-4">Assay Not Found</h1>
           <p className="text-gray-600 mb-8">The assay you're looking for doesn't exist or may have been removed.</p>
@@ -101,7 +100,6 @@ const AssayView: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 mb-6">
