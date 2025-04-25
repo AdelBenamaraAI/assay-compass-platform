@@ -125,7 +125,7 @@ const Catalog: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-science-blue">Assay Catalog</h1>
+            <h1 className="text-3xl font-bold text-science-blue">Assay Marketplace</h1>
             <p className="text-gray-600 mt-1">
               Browse and filter our collection of validated cell analysis assays
             </p>
